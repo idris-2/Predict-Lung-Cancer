@@ -1,7 +1,7 @@
 """
 Document structure for Diplomski:
 - Introductions
-- Merging the datasets and preprocessing (Leave M and F unchanged - I belive it's easier to vizualize)
+- Merging the datasets and preprocessing
 - Exploratory Data Analysis
 - Training the models
 - Results and Conclusion
@@ -83,13 +83,13 @@ def preprocess_dataset(df):
         'shortness_of_breath','swallowing_difficulty','chest_pain','lung_cancer'
     ]
 
-    """
+    
     # Map gender to 1/0: M/MALE ->1, F/FEMALE->0
     if 'gender' in df.columns:
         df['gender'] = df['gender'].astype(str).str.strip().str.upper().map({
             'M': 1, 'MALE': 1, 'F': 0, 'FEMALE': 0
         }).where(lambda s: ~s.isna(), other=df['gender'])
-    """
+    
 
     # For all other expected binary columns, map 2/1 -> 1/0 and YES/NO -> 1/0
     binary_cols = [c for c in standard_cols if c not in ('age','gender')]
