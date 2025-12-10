@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import Spinner from './components/Spinner'
 
 function App() {
   const [formData, setFormData] = useState({
@@ -89,7 +90,7 @@ function App() {
     } catch (err) {
       setError(err.message || 'An error occurred. Make sure your backend is running.')
     } finally {
-      setLoading(false)
+      setLoading(true)
     }
   }
 
@@ -230,7 +231,7 @@ function App() {
                 className="btn btn-primary"
                 disabled={loading}
               >
-                {loading ? 'Sending...' : 'Get Prediction'}
+                {loading ? <Spinner size={20} /> : 'Get Prediction'}
               </button>
               <button
                 type="reset"
