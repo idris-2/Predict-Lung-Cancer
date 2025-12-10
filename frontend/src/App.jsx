@@ -157,36 +157,38 @@ function App() {
             <div className="form-section">
               <h2 className="section-title">Personal Information</h2>
               
-              <div className="form-group">
-                <label htmlFor="gender">Gender <span className="required">*</span></label>
-                <select
-                  id="gender"
-                  name="gender"
-                  value={formData.gender}
-                  onChange={handleInputChange}
-                  className="form-control"
-                  required
-                >
-                  <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                </select>
-              </div>
+              <div className="personal-info-grid">
+                <div className="form-group">
+                  <label htmlFor="gender">Gender <span className="required">*</span></label>
+                  <select
+                    id="gender"
+                    name="gender"
+                    value={formData.gender}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    required
+                  >
+                    <option value="">Select gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                  </select>
+                </div>
 
-              <div className="form-group">
-                <label htmlFor="age">Age <span className="required">*</span></label>
-                <input
-                  type="number"
-                  id="age"
-                  name="age"
-                  min="1"
-                  max="150"
-                  value={formData.age}
-                  onChange={handleInputChange}
-                  className="form-control"
-                  placeholder="Enter your age"
-                  required
-                />
+                <div className="form-group">
+                  <label htmlFor="age">Age <span className="required">*</span></label>
+                  <input
+                    type="number"
+                    id="age"
+                    name="age"
+                    min="1"
+                    max="150"
+                    value={formData.age}
+                    onChange={handleInputChange}
+                    className="form-control"
+                    placeholder="Enter your age"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
