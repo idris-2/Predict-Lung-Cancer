@@ -296,11 +296,13 @@ body {
   }
 
   .form-actions {
-    grid-column: 1;
+    grid-column: 1 / -1;
   }
 
+  /* error stays under left column fields */
   .error-message {
     grid-column: 1;
+    grid-row: auto;
   }
 }
 
