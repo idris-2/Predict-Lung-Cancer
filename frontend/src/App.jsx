@@ -71,7 +71,33 @@ function App() {
         swallowing_difficulty: formData.swallowing_difficulty ? 1 : 0,
         chest_pain: formData.chest_pain ? 1 : 0,
       }
+      /*
+      💬 4. Frontend: React → call FastAPI endpoint
 
+      Inside your React component:
+
+      async function predict(symptoms) {
+        const response = await fetch("http://YOUR_BACKEND_URL/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(symptoms),
+        });
+
+        const result = await response.json();
+        return result.probability;
+      }
+
+      Example usage:
+      const probability = await predict({
+        symptom1: 1,
+        symptom2: 0,
+        symptom3: 1
+      });
+      console.log(probability);
+
+      If the backend is deployed on Hugging Face, you get a URL like:
+      https://your-space.hf.space/predict
+      */
       // Send to backend
       const response = await fetch('http://localhost:5000/predict', {
         method: 'POST',
@@ -90,7 +116,7 @@ function App() {
     } catch (err) {
       setError(err.message || 'An error occurred. Make sure your backend is running.')
     } finally {
-      setLoading(true)
+      setLoading(false)
     }
   }
 

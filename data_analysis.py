@@ -9,7 +9,7 @@ Document structure for SDP (Diplomski):
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-import dataframe_image as dfi
+# import dataframe_image as dfi
 
 from scipy.stats import linregress
 from sklearn.model_selection import train_test_split
@@ -33,7 +33,7 @@ print(df.duplicated().sum())
 print(df.describe().T)
 
 # Export dataframe head as image
-dfi.export(df.head(), "Images/merged_cancer_preview.png")
+# dfi.export(df.head(), "Images/merged_cancer_preview.png")
 
 # Count occurrences of lung cancer
 count = df['lung_cancer'].value_counts().get(1, 0)
