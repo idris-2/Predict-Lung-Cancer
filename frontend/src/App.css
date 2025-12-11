@@ -10,7 +10,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
   min-height: 100vh;
 }
 
@@ -37,7 +37,7 @@ body {
 }
 
 .header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
   color: white;
   padding: 40px 30px;
   text-align: center;
@@ -116,12 +116,12 @@ body {
 
 .form-control:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  border-color: #0077b6;
+  box-shadow: 0 0 0 3px rgba(0, 119, 182, 0.1);
 }
 
 .form-control:hover {
-  border-color: #667eea;
+  border-color: #0077b6;
 }
 
 .personal-info-grid {
@@ -142,13 +142,13 @@ body {
   gap: 12px;
   padding: 12px;
   border-radius: 8px;
-  background: #f8f9fa;
+  background: #caf0f8;
   transition: all 0.3s ease;
   cursor: pointer;
 }
 
 .checkbox-group:hover {
-  background: #f0f1f5;
+  background: #90e0ef;
   transform: translateX(4px);
 }
 
@@ -156,7 +156,7 @@ body {
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: #667eea;
+  accent-color: #0077b6;
   flex-shrink: 0;
 }
 
@@ -193,13 +193,13 @@ body {
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0077b6 0%, #00b4d8 100%);
   color: white;
 }
 
 .btn-primary:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 10px 25px rgba(0, 119, 182, 0.4);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -240,7 +240,7 @@ body {
 }
 
 .result-card {
-  background: #f8f9fa;
+  background: #caf0f8;
   border-radius: 8px;
   padding: 40px;
   width: 100%;
@@ -256,7 +256,7 @@ body {
 
 .result-content {
   background: white;
-  border: 2px solid #667eea;
+  border: 2px solid #0077b6;
   border-radius: 8px;
   padding: 20px;
   margin-bottom: 25px;
