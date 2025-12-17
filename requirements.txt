@@ -9,6 +9,7 @@ fastapi==0.124.2
 fonttools==4.60.2
 h11==0.16.0
 idna==3.11
+imbalanced-learn==0.12.4
 importlib_resources==6.5.2
 joblib==1.5.2
 kiwisolver==1.4.7
@@ -32,4 +33,5 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2025.2
 uvicorn==0.38.0
+xgboost==2.1.4
 zipp==3.23.0

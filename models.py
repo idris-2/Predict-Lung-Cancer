@@ -16,15 +16,24 @@ Main focus should be the "recall" metric due to our requirement for accuracy lun
 """
 
 import pandas as pd
+
 from imblearn.over_sampling import RandomOverSampler
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+
+# Models
 from sklearn.neighbors import KNeighborsClassifier
-import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report
-import seaborn as sns
-from sklearn.metrics import confusion_matrix
+from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import BernoulliNB
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.svm import SVC
+from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
+
+# Metrics
+from sklearn.metrics import accuracy_score, recall_score
+
 # ============================================
 # 1. LOAD DATA
 # ============================================
@@ -70,52 +79,90 @@ print("Test set remains unchanged:", X_test.shape)
 #    Scaling happens INSIDE CV for each fold.
 # ============================================
 
-def make_knn(k):
-    return Pipeline([
+models = {
+    "XGBoost": XGBClassifier(
+        n_estimators=300,
+        max_depth=4,
+        learning_rate=0.05,
+        subsample=0.8,
+        colsample_bytree=0.8,
+        scale_pos_weight=1,   # oversampling already handled
+        eval_metric="logloss",
+        random_state=42
+    ),
+
+    "KNN": Pipeline([
         ("scaler", StandardScaler()),
-        ("knn", KNeighborsClassifier(n_neighbors=k))
+        ("model", KNeighborsClassifier(n_neighbors=5))
+    ]),
+
+    "Logistic Regression": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", LogisticRegression(max_iter=1000))
+    ]),
+
+    "Bernoulli Naive Bayes": BernoulliNB(),
+
+    "Random Forest": RandomForestClassifier(
+        n_estimators=200,
+        random_state=42
+    ),
+
+    "AdaBoost": AdaBoostClassifier(
+        n_estimators=200,
+        random_state=42
+    ),
+
+    "SVM (RBF)": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", SVC(kernel="rbf"))
+    ]),
+
+    "Neural Network (MLP)": Pipeline([
+        ("scaler", StandardScaler()),
+        ("model", MLPClassifier(
+            hidden_layer_sizes=(64, 32),
+            max_iter=500,
+            random_state=42
+        ))
     ])
+}
 
 # ============================================
-# 5. CROSS-VALIDATION FOR K = 1..20
+# 5. EVALUATING AND COMPARING MODELS
 # ============================================
 
-knn_scores = []
+results = []
 
-for k in range(1, 20):
-    model = make_knn(k)
-    scores = cross_val_score(
+for name, model in models.items():
+    # Cross-validated recall
+    cv_recall = cross_val_score(
         model,
-        X_train_over,
-        y_train_over,
+        X_train,
+        y_train,
         cv=5,
-        scoring="accuracy"  # you can change to "recall"
-    )
-    knn_scores.append(scores.mean())
+        scoring="recall"              # focus on recall
+        # scoring="recall_weighted"     # weighted recall to account for class imbalance
+        # scoring="recall_macro"        # macro recall to treat classes equally
+    ).mean()
 
-print(knn_scores)
+    # Fit on full training data
+    model.fit(X_train, y_train)
 
-# ============================================
-# 6. PLOT RESULTS
-# ============================================
+    # Test performance
+    y_pred = model.predict(X_test)
 
-x_ticks = range(1, 20)
+    test_accuracy = accuracy_score(y_test, y_pred)
+    test_recall = recall_score(y_test, y_pred)
 
-plt.plot(x_ticks, knn_scores)
-plt.xticks(x_ticks)
-plt.grid(True)
-plt.xlabel("k (number of neighbors)")
-plt.ylabel("Cross-validated accuracy")
-plt.title("KNN Performance for Different k Values")
-plt.show()
+    results.append({
+        "Model": name,
+        "CV Recall": cv_recall,
+        "Test Recall": test_recall,
+        "Test Accuracy": test_accuracy
+    })
 
-knn=KNeighborsClassifier(n_neighbors=1)
-knn.fit(X_train,y_train)
+results_df = pd.DataFrame(results)
+results_df = results_df.sort_values(by="Test Recall", ascending=False)
 
-confusion_knn=confusion_matrix(y_test,knn.predict(X_test))
-plt.figure(figsize=(8,8))
-sns.heatmap(confusion_knn,annot=True)
-plt.xlabel("Predicted")
-plt.ylabel("Actual")
-
-print(classification_report(y_test,knn.predict(X_test)))
+print(results_df)
