@@ -13,6 +13,10 @@ Models to implement:
 - Neural Network (MLP)
 
 Main focus should be the "recall" metric due to our requirement for accuracy lung cancer detection.
+
+
+Feature selection - feature enginering
+grid search - hyperparameter tuning
 """
 
 import pandas as pd
@@ -21,6 +25,7 @@ from imblearn.over_sampling import RandomOverSampler
 from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
+from sklearn.compose import ColumnTransformer
 
 # Models
 from sklearn.neighbors import KNeighborsClassifier
@@ -52,13 +57,24 @@ PRIMARY_SCORING = "recall"
 # "accuracy"          -> naive baseline
 
 # ============================================
-# 1. LOAD DATA
+# 1. LOAD DATA and PREP AGE
 # ============================================
 
 df = pd.read_csv("Datasets/merged_cancer.csv")
 
 X = df.drop("lung_cancer", axis=1)
 y = df["lung_cancer"]
+
+numeric_features = ["age"]
+binary_features = [
+    col for col in X.columns if col != "age"
+]
+preprocessor = ColumnTransformer(
+    transformers=[
+        ("age_scaler", StandardScaler(), numeric_features),
+        ("binary", "passthrough", binary_features)
+    ]
+)
 
 # ============================================
 # REMOVE OUTLIERS (optional - does not rly immprove things)
@@ -108,12 +124,12 @@ models = {
     ),
 
     "KNN": Pipeline([
-        ("scaler", StandardScaler()),
+        ("preprocess", preprocessor),
         ("model", KNeighborsClassifier(n_neighbors=5))
     ]),
 
     "Logistic Regression": Pipeline([
-        ("scaler", StandardScaler()),
+        ("preprocess", preprocessor),
         ("model", LogisticRegression(max_iter=1000))
     ]),
 
@@ -130,15 +146,15 @@ models = {
     ),
 
     "SVM (RBF)": Pipeline([
-        ("scaler", StandardScaler()),
-        ("model", SVC(kernel="rbf"))
+        ("preprocess", preprocessor),
+        ("model", SVC(kernel="rbf", probability=True))
     ]),
 
     "Neural Network (MLP)": Pipeline([
-        ("scaler", StandardScaler()),
+        ("preprocess", preprocessor),
         ("model", MLPClassifier(
             hidden_layer_sizes=(64, 32),
-            max_iter=500,
+            max_iter=1000,
             random_state=42
         ))
     ])
