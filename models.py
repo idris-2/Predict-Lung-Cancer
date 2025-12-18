@@ -18,7 +18,7 @@ Main focus should be the "recall" metric due to our requirement for accuracy lun
 import pandas as pd
 
 from imblearn.over_sampling import RandomOverSampler
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_validate
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
@@ -32,7 +32,24 @@ from sklearn.neural_network import MLPClassifier
 from xgboost import XGBClassifier
 
 # Metrics
-from sklearn.metrics import accuracy_score, recall_score
+from sklearn.metrics import (
+    accuracy_score,
+    precision_score,
+    recall_score,
+    f1_score
+)
+
+# ============================================
+# CONFIGURATION (will probably be in env)
+# ============================================
+USE_OVERSAMPLING = False
+REMOVE_OUTLIERS = False
+PRIMARY_SCORING = "recall"
+# Options:
+# "recall"            -> minimize false negatives (medical screening)
+# "precision"         -> minimize false positives
+# "f1"                -> balanced UX (recommended for website)
+# "accuracy"          -> naive baseline
 
 # ============================================
 # 1. LOAD DATA
@@ -43,17 +60,16 @@ df = pd.read_csv("Datasets/merged_cancer.csv")
 X = df.drop("lung_cancer", axis=1)
 y = df["lung_cancer"]
 
-"""
 # ============================================
 # REMOVE OUTLIERS (optional - does not rly immprove things)
 # ============================================
-age_min = 29
-age_max = 80
+if REMOVE_OUTLIERS:
+    age_min = 29
+    age_max = 80
+    df = df[df['age'].between(age_min, age_max)]
 
-df = df[df['age'].between(age_min, age_max)]
-"""
 # ============================================
-# 2. SPLIT BEFORE OVERSAMPLING  (CORRECT!!!)
+# 2. SPLIT BEFORE OVERSAMPLING
 # ============================================
 
 X_train, X_test, y_train, y_test = train_test_split(
@@ -68,11 +84,11 @@ X_train, X_test, y_train, y_test = train_test_split(
 # 3. OVERSAMPLE *ONLY THE TRAINING SET*
 # ============================================
 
-ros = RandomOverSampler(random_state=42)
-X_train_over, y_train_over = ros.fit_resample(X_train, y_train)
-
-print("Train after oversampling :", X_train_over.shape)
-print("Test set remains unchanged:", X_test.shape)
+if USE_OVERSAMPLING:
+    ros = RandomOverSampler(random_state=42)
+    X_train_eval, y_train_eval = ros.fit_resample(X_train, y_train)
+else:
+    X_train_eval, y_train_eval = X_train, y_train
 
 # ============================================
 # 4. BUILD A PIPELINE (CORRECT WAY!)
@@ -132,37 +148,54 @@ models = {
 # 5. EVALUATING AND COMPARING MODELS
 # ============================================
 
+scoring = {
+    "accuracy": "accuracy",
+    "precision": "precision",
+    "recall": "recall",
+    "f1": "f1"
+}
 results = []
 
 for name, model in models.items():
-    # Cross-validated recall
-    cv_recall = cross_val_score(
+    cv_results = cross_validate(
         model,
-        X_train,
-        y_train,
+        X_train_eval,
+        y_train_eval,
         cv=5,
-        scoring="recall"              # focus on recall
-        # scoring="recall_weighted"     # weighted recall to account for class imbalance
-        # scoring="recall_macro"        # macro recall to treat classes equally
-    ).mean()
+        scoring=scoring,
+        return_train_score=False
+    )
 
-    # Fit on full training data
-    model.fit(X_train, y_train)
+    # Fit on full training set
+    model.fit(X_train_eval, y_train_eval)
 
-    # Test performance
     y_pred = model.predict(X_test)
-
-    test_accuracy = accuracy_score(y_test, y_pred)
-    test_recall = recall_score(y_test, y_pred)
 
     results.append({
         "Model": name,
-        "CV Recall": cv_recall,
-        "Test Recall": test_recall,
-        "Test Accuracy": test_accuracy
+
+        # Cross-validated metrics
+        "CV Accuracy": cv_results["test_accuracy"].mean(),
+        "CV Precision": cv_results["test_precision"].mean(),
+        "CV Recall": cv_results["test_recall"].mean(),
+        "CV F1": cv_results["test_f1"].mean(),
+
+        # Test metrics
+        "Test Accuracy": accuracy_score(y_test, y_pred),
+        "Test Precision": precision_score(y_test, y_pred),
+        "Test Recall": recall_score(y_test, y_pred),
+        "Test F1": f1_score(y_test, y_pred),
     })
 
 results_df = pd.DataFrame(results)
-results_df = results_df.sort_values(by="Test Recall", ascending=False)
+
+sort_column = {
+    "accuracy": "Test Accuracy",
+    "precision": "Test Precision",
+    "recall": "Test Recall",
+    "f1": "Test F1"
+}[PRIMARY_SCORING]
+
+results_df = results_df.sort_values(by=sort_column, ascending=False)
 
 print(results_df)
