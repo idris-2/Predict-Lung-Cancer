@@ -47,9 +47,9 @@ from sklearn.metrics import (
 # ============================================
 # CONFIGURATION (will probably be in env)
 # ============================================
-USE_OVERSAMPLING = False
+USE_OVERSAMPLING = True
 REMOVE_OUTLIERS = False
-PRIMARY_SCORING = "recall"
+PRIMARY_SCORING = "f1"
 # Options:
 # "recall"            -> minimize false negatives (medical screening)
 # "precision"         -> minimize false positives
@@ -57,15 +57,45 @@ PRIMARY_SCORING = "recall"
 # "accuracy"          -> naive baseline
 
 # ============================================
-# 1. LOAD DATA and PREP AGE
+# 1. LOAD DATA
 # ============================================
 
 df = pd.read_csv("Datasets/merged_cancer.csv")
 
+# -----------------------------
+# FEATURE ENGINEERING
+# -----------------------------
+
+symptom_cols = [
+    "smoking", "yellow_fingers", "anxiety", "peer_pressure",
+    "chronic_disease", "fatigue", "allergy", "wheezing",
+    "alcohol", "coughing", "shortness_of_breath",
+    "swallowing_difficulty", "chest_pain"
+]
+
+# Total symptom burden
+df["symptom_count"] = df[symptom_cols].sum(axis=1)
+
+# Lung / respiratory focused symptoms
+df["respiratory_score"] = (
+    df["coughing"] +
+    df["wheezing"] +
+    df["shortness_of_breath"] +
+    df["chest_pain"]
+)
+
+# Age-based risk flag
+df["age_risk"] = (df["age"] >= 60).astype(int)
+
+# ============================================
+# SPLIT FEATURES / TARGET
+# ============================================
+
 X = df.drop("lung_cancer", axis=1)
 y = df["lung_cancer"]
 
-numeric_features = ["age"]
+
+numeric_features = ["age", "symptom_count", "respiratory_score"]
 binary_features = [
     col for col in X.columns if col != "age"
 ]
@@ -114,7 +144,7 @@ else:
 models = {
     "XGBoost": XGBClassifier(
         n_estimators=300,
-        max_depth=4,
+        max_depth=5,
         learning_rate=0.05,
         subsample=0.8,
         colsample_bytree=0.8,
@@ -185,7 +215,10 @@ for name, model in models.items():
     # Fit on full training set
     model.fit(X_train_eval, y_train_eval)
 
-    y_pred = model.predict(X_test)
+    # y_pred = model.predict(X_test)
+    y_proba = model.predict_proba(X_test)[:, 1]
+    y_pred = (y_proba >= 0.35).astype(int)
+
 
     results.append({
         "Model": name,

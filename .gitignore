@@ -6,6 +6,9 @@ __pycache__/
 DS_Store
 .DS_Store
 backup/
+test.py
+test.csv
+Lung_Cancer_4.csv
 
 # C extensions
 *.so

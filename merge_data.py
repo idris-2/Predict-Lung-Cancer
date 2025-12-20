@@ -98,7 +98,17 @@ def preprocess_dataset(df):
             s = df[col]
             # If numeric 1/2 mapping
             if pd.api.types.is_numeric_dtype(s):
-                df[col] = s.map({2:1, 1:0}).astype('Int64')
+                unique_vals = set(s.dropna().unique())
+
+                # Case 1: Kaggle-style (1/2)
+                if unique_vals.issubset({1, 2}):
+                    df[col] = s.map({2: 1, 1: 0}).astype('Int64')
+
+                # Case 2: already correct (0/1)
+                elif unique_vals.issubset({0, 1}):
+                    df[col] = s.astype('Int64')
+
+                # Otherwise: leave untouched
             else:
                 # common string forms
                 df[col] = s.astype(str).str.strip().str.upper().map({
@@ -134,6 +144,8 @@ def preprocess_dataset(df):
 d1 = pd.read_csv('Datasets/Lung_Cancer_1.csv')
 d2 = pd.read_csv('Datasets/Lung_Cancer_2.csv')
 d3 = pd.read_csv('Datasets/Lung_Cancer_3.csv')
+# d4 = pd.read_csv('Datasets/Lung_Cancer_4.csv')
+# d5 = pd.read_csv('Datasets/test.csv')
 
 # preprocess and merge
 merged = merge_datasets(d1, d2, d3)
@@ -143,3 +155,5 @@ print(merged.dtypes)
 
 # Save DataFrame into csv
 merged.to_csv('Datasets/merged_cancer.csv', index=False)
+print((merged['lung_cancer'] == 1).sum())
+print((merged['lung_cancer'] == 0).sum())
