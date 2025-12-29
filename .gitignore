@@ -9,6 +9,14 @@ backup/
 test.py
 test.csv
 
+# Don't need to upload all model files, just the best performing ones
+backend/Models/Random Forest.pkl
+backend/Models/Logistic Regression.pkl
+backend/Models/Neural Network (MLP).pkl
+backend/Models/AdaBoost.pkl
+backend/Models/KNN.pkl
+backend/Models/Bernoulli Naive Bayes.pkl
+
 # C extensions
 *.so
 
