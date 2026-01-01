@@ -1,7 +1,8 @@
-title: Lung Cancer
-emoji: 💻
-colorFrom: red
-colorTo: purple
+---
+title: Lung Cancer Predictor
+emoji: 🫁
+colorFrom: blue
+colorTo: green
 sdk: docker
 pinned: false
-short_description: lung cancer prediction by symptoms
+---

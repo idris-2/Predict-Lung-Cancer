@@ -34,91 +34,62 @@ function App() {
     setError(null)
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError(null)
-    setLoading(true)
+const handleSubmit = async (e) => {
+  e.preventDefault()
+  setError(null)
+  setLoading(true)
 
-    // Validation
-    if (!formData.gender || !formData.age) {
-      setError('Please fill in all required fields')
-      setLoading(false)
-      return
-    }
-
-    if (formData.age < 1 || formData.age > 150) {
-      setError('Please enter a valid age')
-      setLoading(false)
-      return
-    }
-
-    try {
-      // Convert checkbox values to 1 or 0 for the backend
-      const payload = {
-        gender: formData.gender,
-        age: parseInt(formData.age),
-        smoking: formData.smoking ? 1 : 0,
-        yellow_fingers: formData.yellow_fingers ? 1 : 0,
-        anxiety: formData.anxiety ? 1 : 0,
-        peer_pressure: formData.peer_pressure ? 1 : 0,
-        chronic_disease: formData.chronic_disease ? 1 : 0,
-        fatigue: formData.fatigue ? 1 : 0,
-        allergy: formData.allergy ? 1 : 0,
-        wheezing: formData.wheezing ? 1 : 0,
-        alcohol: formData.alcohol ? 1 : 0,
-        coughing: formData.coughing ? 1 : 0,
-        shortness_of_breath: formData.shortness_of_breath ? 1 : 0,
-        swallowing_difficulty: formData.swallowing_difficulty ? 1 : 0,
-        chest_pain: formData.chest_pain ? 1 : 0,
-      }
-      /*
-      💬 4. Frontend: React → call FastAPI endpoint
-
-      Inside your React component:
-
-      async function predict(symptoms) {
-        const response = await fetch("http://YOUR_BACKEND_URL/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(symptoms),
-        });
-
-        const result = await response.json();
-        return result.probability;
-      }
-
-      Example usage:
-      const probability = await predict({
-        symptom1: 1,
-        symptom2: 0,
-        symptom3: 1
-      });
-      console.log(probability);
-
-      If the backend is deployed on Hugging Face, you get a URL like:
-      https://your-space.hf.space/predict
-      */
-      // Send to backend
-      const response = await fetch('http://localhost:5000/predict', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get prediction')
-      }
-
-      const data = await response.json()
-      setResult(data)
-    } catch (err) {
-      setError(err.message || 'An error occurred. Make sure your backend is running.')
-    } finally {
-      setLoading(false)
-    }
+  // Validation
+  if (!formData.gender || !formData.age) {
+    setError('Please fill in all required fields')
+    setLoading(false)
+    return
   }
+
+  if (formData.age < 1 || formData.age > 150) {
+    setError('Please enter a valid age')
+    setLoading(false)
+    return
+  }
+
+  try {
+    // Convert form data to the backend format
+    const payload = {
+      gender: formData.gender === 'Male' ? 1 : 0,
+      age: parseInt(formData.age),
+      smoking: formData.smoking ? 1 : 0,
+      yellow_fingers: formData.yellow_fingers ? 1 : 0,
+      anxiety: formData.anxiety ? 1 : 0,
+      peer_pressure: formData.peer_pressure ? 1 : 0,
+      chronic_disease: formData.chronic_disease ? 1 : 0,
+      fatigue: formData.fatigue ? 1 : 0,
+      allergy: formData.allergy ? 1 : 0,
+      wheezing: formData.wheezing ? 1 : 0,
+      alcohol: formData.alcohol ? 1 : 0,
+      coughing: formData.coughing ? 1 : 0,
+      shortness_of_breath: formData.shortness_of_breath ? 1 : 0,
+      swallowing_difficulty: formData.swallowing_difficulty ? 1 : 0,
+      chest_pain: formData.chest_pain ? 1 : 0,
+    }
+
+    const response = await fetch('https://nopen5446-lung-cancer.hf.space/predict', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+
+    if (!response.ok) {
+      throw new Error('Failed to get prediction')
+    }
+
+    const data = await response.json()
+    setResult(data)
+  } catch (err) {
+    setError(err.message || 'An error occurred. Make sure your backend is running.')
+  } finally {
+    setLoading(false)
+  }
+}
 
   const handleReset = () => {
     setFormData({
