@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import joblib
 import numpy as np
@@ -9,6 +10,14 @@ import os
 from keras_classifier import KerasBinaryClassifier
 
 app = FastAPI(title="Lung Cancer Prediction API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # restrict later in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Define the folder where models are stored
 MODEL_DIR = "Models"

@@ -17,6 +17,8 @@ backend/Models/AdaBoost.pkl
 backend/Models/KNN.pkl
 backend/Models/Bernoulli Naive Bayes.pkl
 
+backend/requirements.txt
+
 # C extensions
 *.so
 
