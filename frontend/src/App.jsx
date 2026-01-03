@@ -133,23 +133,86 @@ const handleSubmit = async (e) => {
     <div className="container">
       <div className="form-wrapper">
         <div className="header">
-          <h1>Lung Cancer Prediction</h1>
-          <p className="subtitle">Please enter your information and symptoms</p>
+          {result ? (
+            <>
+              <h1>Prediction Results</h1>
+              <p className="subtitle">
+                Based on your provided information and symptoms
+              </p>
+            </>
+          ) : (
+            <>
+              <h1>Lung Cancer Prediction</h1>
+              <p className="subtitle">
+                Please enter your information and symptoms
+              </p>
+            </>
+          )}
         </div>
 
-        {result ? (
-          <div className="result-container">
-            <div className="result-card">
-              <h2>Prediction Result</h2>
-              <div className="result-content">
-                <pre>{JSON.stringify(result, null, 2)}</pre>
-              </div>
-              <button onClick={handleReset} className="btn btn-primary">
-                New Prediction
-              </button>
+      {result ? (
+        <div className="result-container">
+          <div className="prediction-layout">
+
+            {/* Individual model scores */}
+            <div className="model-scores">
+              {Object.entries(result.individual_model_probs).map(
+                ([model, value]) => (
+                  <div key={model} className="model-card">
+                    <h3>{model}</h3>
+                    <p className="model-score">
+                      {(value * 100).toFixed(1)}%
+                    </p>
+                  </div>
+                )
+              )}
             </div>
+
+            {/* Overall score */}
+            <div className={`overall-score ${result.risk_level}`}>
+              <h2>Overall Risk</h2>
+              <p className="overall-percentage">
+                {(result.lung_cancer_probability * 100).toFixed(1)}%
+              </p>
+              <span className="risk-label">
+                {result.risk_level.toUpperCase()}
+              </span>
+            </div>
+
+            {/* Explanation */}
+            <div className="prediction-text">
+              {result.risk_level === 'high' && (
+                <p>
+                  The models indicate a <strong>high probability</strong> of lung cancer.
+                  Please consult a medical professional as soon as possible for
+                  further evaluation.
+                </p>
+              )}
+              {result.risk_level === 'medium' && (
+                <p>
+                  The prediction suggests a <strong>moderate risk</strong>. Monitoring
+                  symptoms and seeking medical advice is recommended.
+                </p>
+              )}
+              {result.risk_level === 'low' && (
+                <p>
+                  The prediction indicates a <strong>low risk</strong>. Maintaining a
+                  healthy lifestyle is advised.
+                </p>
+              )}
+            </div>
+
+            {/* Action */}
+            <button
+              onClick={handleReset}
+              className="btn btn-primary result-btn"
+            >
+              New Prediction
+            </button>
+
           </div>
-        ) : (
+        </div>
+      ) : (
           <form onSubmit={handleSubmit} className="form">
             {/* Personal Information Section */}
             <div className="form-section">
