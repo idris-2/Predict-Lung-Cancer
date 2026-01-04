@@ -1,0 +1,13 @@
+DS_Store
+.DS_Store
+backup/
+test.py
+test.csv
+
+# Don't need to upload all model files, just the best performing ones
+Models/Random Forest.pkl
+Models/Logistic Regression.pkl
+Models/Neural Network (MLP).pkl
+Models/AdaBoost.pkl
+Models/KNN.pkl
+Models/Bernoulli Naive Bayes.pkl

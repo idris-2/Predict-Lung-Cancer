@@ -1,0 +1,10 @@
+.vscode
+.DS_Store
+**/.DS_Store
+
+**/AdaBoost.pkl
+**/Bernoulli Naive Bayes.pkl
+**/KNN.pkl
+**/Logistic Regression.pkl
+**/Neural Network (MLP).pkl
+**/Random Forest.pkl
