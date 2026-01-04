@@ -9,19 +9,15 @@ df_transformed = pd.DataFrame({
     "smoking": df["SMOKING"],
     "yellow_fingers": df["FINGER_DISCOLORATION"],
     "anxiety": df["MENTAL_STRESS"],
-    "peer_pressure": (
-        (df["SMOKING_FAMILY_HISTORY"] == 1) & (df["MENTAL_STRESS"] == 1)
-    ).astype(int),
+    "peer_pressure": (((df["SMOKING_FAMILY_HISTORY"] == 1) | (df["FAMILY_HISTORY"] == 1)) & (df["MENTAL_STRESS"] == 1)).astype(int),
     "chronic_disease": df["LONG_TERM_ILLNESS"],
     "fatigue": (df["ENERGY_LEVEL"] < 55).astype(int),
-    "allergy": df["IMMUNE_WEAKNESS"],
+    "allergy": df[['IMMUNE_WEAKNESS', 'STRESS_IMMUNE']].max(axis=1),
     "wheezing": df["BREATHING_ISSUE"],
     "alcohol": df["ALCOHOL_CONSUMPTION"],
-    "coughing": df["THROAT_DISCOMFORT"],
+    "coughing": ((df["THROAT_DISCOMFORT"] == 1) & (df["EXPOSURE_TO_POLLUTION"] == 1)).astype(int),
     "shortness_of_breath": ((df["OXYGEN_SATURATION"] < 94) & (df["BREATHING_ISSUE"] == 1)).astype(int),
-    "swallowing_difficulty": (
-        (df["THROAT_DISCOMFORT"] == 1) & (df["BREATHING_ISSUE"] == 1)
-    ).astype(int),
+    "swallowing_difficulty": df['THROAT_DISCOMFORT'],
     "chest_pain": df["CHEST_TIGHTNESS"],
     "lung_cancer": df["PULMONARY_DISEASE"].map({"YES": 1, "NO": 0})
 })
