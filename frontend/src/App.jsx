@@ -183,24 +183,49 @@ const handleSubmit = async (e) => {
             <div className="prediction-text">
               {result.risk_level === 'high' && (
                 <p>
-                  The models indicate a <strong>high probability</strong> of lung cancer.
-                  Please consult a medical professional as soon as possible for
-                  further evaluation.
+                  The models indicate a <strong>high probability</strong> of lung cancer based on
+                  the information you provided. This result does <strong>not</strong> mean that
+                  you have lung cancer, but it suggests that your symptoms and risk factors are
+                  commonly associated with higher-risk cases.
+                  <br /><br />
+                  This tool is intended as an <strong>early awareness and screening aid</strong>,
+                  not a medical diagnosis. If you are experiencing symptoms or feel concerned
+                  about your health, it is strongly recommended that you consult a qualified
+                  medical professional for proper testing and evaluation.
                 </p>
               )}
+
               {result.risk_level === 'medium' && (
                 <p>
-                  The prediction suggests a <strong>moderate risk</strong>. Monitoring
-                  symptoms and seeking medical advice is recommended.
+                  The prediction suggests a <strong>moderate risk</strong> of lung cancer based on
+                  the patterns identified by the models. This means that some of your inputs
+                  resemble cases where medical follow-up was beneficial.
+                  <br /><br />
+                  Please note that this system is <strong>not a doctor</strong> and cannot replace
+                  professional medical advice. Consider monitoring your symptoms closely and
+                  speaking with a healthcare provider if symptoms persist, worsen, or cause
+                  concern.
                 </p>
               )}
+
               {result.risk_level === 'low' && (
                 <p>
-                  The prediction indicates a <strong>low risk</strong>. Maintaining a
-                  healthy lifestyle is advised.
+                  The prediction indicates a <strong>low risk</strong> of lung cancer based on the
+                  provided information. This suggests that your current inputs do not strongly
+                  match high-risk patterns seen in the data.
+                  <br /><br />
+                  However, this result should not be interpreted as a guarantee of good health.
+                  This model is designed for <strong>informational purposes only</strong>. If you
+                  notice new or worsening symptoms, or have ongoing health concerns, seeking
+                  professional medical advice is always recommended.
                 </p>
               )}
             </div>
+
+            <p style={{ fontSize: '0.85em', opacity: 0.7, marginTop: '16px', color: 'black', textAlign: 'center' }}>
+              This application is intended for educational and informational purposes only and
+              should not be used as a substitute for professional medical advice, diagnosis, or treatment.
+            </p>
 
             {/* Action */}
             <button
