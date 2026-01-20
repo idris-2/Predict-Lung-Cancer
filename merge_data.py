@@ -1,12 +1,3 @@
-"""
-Document structure for Diplomski:
-- Introductions
-- Merging the datasets and preprocessing
-- Exploratory Data Analysis
-- Training the models
-- Results and Conclusion
-"""
-
 import pandas as pd
 
 def merge_datasets(d1, d2, d3=None):
@@ -52,6 +43,8 @@ def preprocess_dataset(df):
             col_map[c] = 'peer_pressure'
         elif 'chronic' in k:
             col_map[c] = 'chronic_disease'
+        elif 'severe' in k and 'fatig' in k:
+            col_map[c] = 'severe_fatigue'
         elif 'fatig' in k:
             col_map[c] = 'fatigue'
         elif 'allerg' in k:
@@ -79,10 +72,10 @@ def preprocess_dataset(df):
     # expected standard column order (can be adjusted)
     standard_cols = [
         'gender','age','smoking','yellow_fingers','anxiety','peer_pressure',
-        'chronic_disease','fatigue','allergy','wheezing','alcohol','coughing',
-        'shortness_of_breath','swallowing_difficulty','chest_pain','lung_cancer'
+        'chronic_disease','fatigue','severe_fatigue','allergy','wheezing',
+        'alcohol','coughing','shortness_of_breath','swallowing_difficulty',
+        'chest_pain','environmental_risk','lung_cancer'
     ]
-
     
     # Map gender to 1/0: M/MALE ->1, F/FEMALE->0
     if 'gender' in df.columns:
@@ -137,6 +130,11 @@ def preprocess_dataset(df):
         if c not in df.columns:
             df[c] = pd.NA
 
+    # Fill NaN with 0 ONLY for specific columns (feature engineering choice)
+    for c in ['severe_fatigue', 'environmental_risk']:
+        if c in df.columns:
+            df[c] = df[c].fillna(0).astype('Int64')
+
     # return with columns in standard order
     return df[standard_cols]
 
@@ -144,8 +142,6 @@ def preprocess_dataset(df):
 d1 = pd.read_csv('Datasets/Lung_Cancer_1.csv')
 d2 = pd.read_csv('Datasets/Lung_Cancer_2.csv')
 d3 = pd.read_csv('Datasets/Lung_Cancer_3.csv')
-# d4 = pd.read_csv('Datasets/Lung_Cancer_4.csv')
-# d5 = pd.read_csv('Datasets/test.csv')
 
 # preprocess and merge
 merged = merge_datasets(d1, d2, d3)

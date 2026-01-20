@@ -89,9 +89,10 @@ df = pd.read_csv("../Datasets/merged_cancer.csv")
 
 symptom_cols = [
     "smoking", "yellow_fingers", "anxiety", "peer_pressure",
-    "chronic_disease", "fatigue", "allergy", "wheezing",
-    "alcohol", "coughing", "shortness_of_breath",
-    "swallowing_difficulty", "chest_pain"
+    "chronic_disease", "fatigue", "severe_fatigue",
+    "allergy", "wheezing", "alcohol", "coughing",
+    "shortness_of_breath", "swallowing_difficulty",
+    "chest_pain", "environmental_risk"
 ]
 
 # Total symptom burden
@@ -103,6 +104,19 @@ df["respiratory_score"] = (
     df["wheezing"] +
     df["shortness_of_breath"] +
     df["chest_pain"]
+)
+df["severe_respiratory"] = (
+    (df["shortness_of_breath"] == 1) &
+    (df["chest_pain"] == 1)
+).astype(int)
+
+# Systemic (whole-body) symptom burden
+df["systemic_score"] = (
+    df["fatigue"] +
+    df["severe_fatigue"] +
+    df["anxiety"] +
+    df["chronic_disease"] +
+    df["allergy"]
 )
 
 # Age-based risk flag
@@ -136,7 +150,7 @@ def make_pipeline(model, use_oversampling):
 X = df.drop("lung_cancer", axis=1)
 y = df["lung_cancer"]
 
-numeric_features = ["age", "symptom_count", "respiratory_score"]
+numeric_features = ["age", "symptom_count", "systemic_score", "severe_respiratory", "respiratory_score"]
 binary_features = [col for col in X.columns if col not in numeric_features]
 preprocessor = ColumnTransformer(
     transformers=[

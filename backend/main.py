@@ -32,9 +32,11 @@ MODEL_PATHS = {
 # If your training script dropped "lung_cancer", this must be that exact column list
 COLUMN_ORDER = [
     "gender", "age", "smoking", "yellow_fingers", "anxiety", "peer_pressure",
-    "chronic_disease", "fatigue", "allergy", "wheezing", "alcohol",
-    "coughing", "shortness_of_breath", "swallowing_difficulty", "chest_pain",
-    "symptom_count", "respiratory_score", "age_risk"
+    "chronic_disease", "fatigue", "severe_fatigue", "allergy", "wheezing",
+    "alcohol", "coughing", "shortness_of_breath",
+    "swallowing_difficulty", "chest_pain", "environmental_risk",
+    "symptom_count", "respiratory_score", "systemic_score",
+    "severe_respiratory", "age_risk"
 ]
 
 loaded_models = {}
@@ -61,6 +63,7 @@ class PatientInput(BaseModel):
     peer_pressure: int
     chronic_disease: int
     fatigue: int
+    severe_fatigue: int
     allergy: int
     wheezing: int
     alcohol: int
@@ -68,6 +71,7 @@ class PatientInput(BaseModel):
     shortness_of_breath: int
     swallowing_difficulty: int
     chest_pain: int
+    environmental_risk: int
 
 @app.post("/predict")
 def predict(data: PatientInput):
@@ -76,23 +80,43 @@ def predict(data: PatientInput):
 
     # 1. Feature Engineering (must match training script)
     symptom_count = sum([
-        data.smoking, data.yellow_fingers, data.anxiety, data.peer_pressure,
-        data.chronic_disease, data.fatigue, data.allergy, data.wheezing,
-        data.alcohol, data.coughing, data.shortness_of_breath,
-        data.swallowing_difficulty, data.chest_pain
+        data.smoking,
+        data.yellow_fingers,
+        data.anxiety,
+        data.peer_pressure,
+        data.chronic_disease,
+        data.fatigue,
+        data.severe_fatigue,
+        data.allergy,
+        data.wheezing,
+        data.alcohol,
+        data.coughing,
+        data.shortness_of_breath,
+        data.swallowing_difficulty,
+        data.chest_pain,
+        data.environmental_risk
     ])
 
     respiratory_score = (
         data.coughing + data.wheezing + data.shortness_of_breath + data.chest_pain
     )
-
+    severe_respiratory = int(data.shortness_of_breath == 1 and data.chest_pain == 1)
+    systemic_score = (
+        data.fatigue +
+        data.severe_fatigue +
+        data.anxiety +
+        data.chronic_disease +
+        data.allergy
+    )
     age_risk = 1 if data.age >= 60 else 0
     
     # 2. Prepare Input DataFrame with strict column ordering
     input_data = data.model_dump()
     input_data.update({
         "symptom_count": symptom_count,
+        "systemic_score": systemic_score,
         "respiratory_score": respiratory_score,
+        "severe_respiratory": severe_respiratory,
         "age_risk": age_risk
     })
     
