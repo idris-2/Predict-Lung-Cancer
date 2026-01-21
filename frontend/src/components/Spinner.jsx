@@ -1,11 +1,13 @@
 import { DNA } from 'react-loader-spinner'
 
-function Spinner({ size = 24, visible = true, ariaLabel = 'dna-loading', wrapperClass = 'dna-wrapper' }) {
+function Spinner({ size = 40, visible = true, ariaLabel = 'dna-loading', wrapperClass = 'dna-wrapper', dnaColorOne = '#FF0000', dnaColorTwo = '#00ff00' }) {
   return (
     <DNA
       visible={visible}
       height={size}
       width={size}
+      dnaColorOne={dnaColorOne}
+      dnaColorTwo={dnaColorTwo}
       ariaLabel={ariaLabel}
       wrapperStyle={{ display: 'inline-block' }}
       wrapperClass={wrapperClass}

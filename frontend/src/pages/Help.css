@@ -1,0 +1,106 @@
+.help-content {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.help-section h2 {
+  font-size: 1.6em;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.help-section p {
+  color: #555;
+  line-height: 1.7;
+  font-size: 1em;
+}
+
+.help-section ul,
+.help-section ol {
+  color: #555;
+  line-height: 1.7;
+  font-size: 1em;
+}
+
+.help-section li {
+  margin-bottom: 10px;
+}
+
+.symptom-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.symptom-card {
+  background: #caf0f8;
+  border-radius: 8px;
+  padding: 20px;
+  transition: transform 0.2s ease;
+}
+
+.symptom-card:hover {
+  transform: translateY(-4px);
+}
+
+.symptom-card h3 {
+  margin-bottom: 10px;
+  color: #023e8a;
+}
+
+.image-placeholder {
+  height: 240px;
+  border: 2px dashed #0077b6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0077b6;
+  font-weight: 600;
+  background: #f1faff;
+}
+
+.help-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  text-decoration: none;   /* 🔴 removes link underline */
+  line-height: 1;          /* 🔴 fixes vertical centering */
+
+  padding: 12px 30px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.btn,
+.btn:hover,
+.btn:active,
+.btn:focus,
+.btn:visited {
+  color: white;
+  text-decoration: none;
+}
+.btn-secondary {
+  color: #333;
+}
+
+.help-link {
+  color: white;
+  text-decoration: underline;
+  font-size: 0.9em;
+}

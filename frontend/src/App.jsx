@@ -1,8 +1,11 @@
 import { useState } from 'react'
+import { Routes, Route, Link } from 'react-router-dom'
 import './assets/App.css'
 import Spinner from './components/Spinner'
+import Help from './pages/Help'
 
-function App() {
+function MainApp() {
+
   const [formData, setFormData] = useState({
     gender: '',
     age: '',
@@ -34,62 +37,61 @@ function App() {
     setError(null)
   }
 
-const handleSubmit = async (e) => {
-  e.preventDefault()
-  setError(null)
-  setLoading(true)
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
 
-  // Validation
-  if (!formData.gender || !formData.age) {
-    setError('Please fill in all required fields')
-    setLoading(false)
-    return
-  }
-
-  if (formData.age < 1 || formData.age > 150) {
-    setError('Please enter a valid age')
-    setLoading(false)
-    return
-  }
-
-  try {
-    // Convert form data to the backend format
-    const payload = {
-      gender: formData.gender === 'Male' ? 1 : 0,
-      age: parseInt(formData.age),
-      smoking: formData.smoking ? 1 : 0,
-      yellow_fingers: formData.yellow_fingers ? 1 : 0,
-      anxiety: formData.anxiety ? 1 : 0,
-      peer_pressure: formData.peer_pressure ? 1 : 0,
-      chronic_disease: formData.chronic_disease ? 1 : 0,
-      fatigue: formData.fatigue ? 1 : 0,
-      allergy: formData.allergy ? 1 : 0,
-      wheezing: formData.wheezing ? 1 : 0,
-      alcohol: formData.alcohol ? 1 : 0,
-      coughing: formData.coughing ? 1 : 0,
-      shortness_of_breath: formData.shortness_of_breath ? 1 : 0,
-      swallowing_difficulty: formData.swallowing_difficulty ? 1 : 0,
-      chest_pain: formData.chest_pain ? 1 : 0,
+    // Validation
+    if (!formData.gender || !formData.age) {
+      setError('Please fill in all required fields')
+      setLoading(false)
+      return
     }
 
-    const response = await fetch('https://nopen5446-lung-cancer.hf.space/predict', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    })
-
-    if (!response.ok) {
-      throw new Error('Failed to get prediction')
+    if (formData.age < 1 || formData.age > 150) {
+      setError('Please enter a valid age')
+      setLoading(false)
+      return
     }
 
-    const data = await response.json()
-    setResult(data)
-  } catch (err) {
-    setError(err.message || 'An error occurred. Make sure your backend is running.')
-  } finally {
-    setLoading(false)
+    try {
+      const payload = {
+        gender: formData.gender === 'Male' ? 1 : 0,
+        age: parseInt(formData.age),
+        smoking: formData.smoking ? 1 : 0,
+        yellow_fingers: formData.yellow_fingers ? 1 : 0,
+        anxiety: formData.anxiety ? 1 : 0,
+        peer_pressure: formData.peer_pressure ? 1 : 0,
+        chronic_disease: formData.chronic_disease ? 1 : 0,
+        fatigue: formData.fatigue ? 1 : 0,
+        allergy: formData.allergy ? 1 : 0,
+        wheezing: formData.wheezing ? 1 : 0,
+        alcohol: formData.alcohol ? 1 : 0,
+        coughing: formData.coughing ? 1 : 0,
+        shortness_of_breath: formData.shortness_of_breath ? 1 : 0,
+        swallowing_difficulty: formData.swallowing_difficulty ? 1 : 0,
+        chest_pain: formData.chest_pain ? 1 : 0,
+      }
+
+      const response = await fetch('https://nopen5446-lung-cancer.hf.space/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to get prediction')
+      }
+
+      const data = await response.json()
+      setResult(data)
+    } catch (err) {
+      setError(err.message || 'An error occurred.')
+    } finally {
+      setLoading(false)
+    }
   }
-}
 
   const handleReset = () => {
     setFormData({
@@ -132,22 +134,21 @@ const handleSubmit = async (e) => {
   return (
     <div className="container">
       <div className="form-wrapper">
+
+        {/* HEADER */}
         <div className="header">
-          {result ? (
-            <>
-              <h1>Prediction Results</h1>
-              <p className="subtitle">
-                Based on your provided information and symptoms
-              </p>
-            </>
-          ) : (
-            <>
-              <h1>Lung Cancer Prediction</h1>
-              <p className="subtitle">
-                Please enter your information and symptoms
-              </p>
-            </>
-          )}
+          <h1>{result ? 'Prediction Results' : 'Lung Cancer Prediction'}</h1>
+          <p className="subtitle">
+            {result
+              ? 'Based on your provided information and symptoms'
+              : 'Please enter your information and symptoms'}
+          </p>
+
+          <div className="header-actions">
+            <Link to="/Predict-Lung-Cancer/help" className="help-link">
+              Learn what these symptoms mean
+            </Link>
+          </div>
         </div>
 
       {result ? (
@@ -316,7 +317,15 @@ const handleSubmit = async (e) => {
                 className="btn btn-primary"
                 disabled={loading}
               >
-                {loading ? <Spinner size={20} /> : 'Get Prediction'}
+                {loading ? (
+                <div className="dna-loading">
+                  <Spinner/>
+                  <Spinner/>
+                  <Spinner/>
+                </div>
+                ) : (
+                  'Get Prediction'
+                )}
               </button>
               <button
                 type="reset"
@@ -334,4 +343,11 @@ const handleSubmit = async (e) => {
   )
 }
 
-export default App
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/Predict-Lung-Cancer/" element={<MainApp />} />
+      <Route path="/Predict-Lung-Cancer/help" element={<Help />} />
+    </Routes>
+  )
+}
